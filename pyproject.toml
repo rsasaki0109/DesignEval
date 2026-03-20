@@ -1,0 +1,29 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "design-eval"
+version = "0.1.0"
+description = "System design interview evaluator powered by LLM"
+requires-python = ">=3.10"
+dependencies = [
+    "click>=8.1",
+    "pydantic>=2.0",
+    "openai>=1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff",
+    "pytest",
+]
+
+[project.scripts]
+design-eval = "design_eval.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/design_eval"]
+
+[tool.ruff]
+line-length = 100

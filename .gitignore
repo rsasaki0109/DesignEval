@@ -1,0 +1,12 @@
+__pycache__/
+*.egg-info/
+dist/
+build/
+.env
+*.pyc
+output/
+
+# Web
+web/node_modules/
+web/.next/
+web/.env.local

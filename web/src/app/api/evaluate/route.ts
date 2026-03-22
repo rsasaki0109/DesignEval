@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { evaluate } from "@/lib/evaluator";
 import { averageScore } from "@/lib/models";
+import { notifyEvaluationComplete } from "@/lib/webhook";
 
 export const maxDuration = 60;
 
@@ -71,6 +72,13 @@ export async function POST(request: NextRequest) {
 
     if (insertError) {
       console.error("Failed to save evaluation:", insertError);
+    }
+
+    const webhookUrl = process.env.WEBHOOK_URL;
+    if (webhookUrl) {
+      notifyEvaluationComplete(result, webhookUrl, problem).catch((err) => {
+        console.error("Webhook notification failed:", err);
+      });
     }
 
     const remaining = FREE_MONTHLY_LIMIT - usedCount - 1;

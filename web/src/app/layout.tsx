@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import Navbar from "@/components/Navbar";
+import ThemeProvider from "@/components/ThemeProvider";
 import "./globals.css";
 
 const geist = Geist({
@@ -21,8 +22,10 @@ export default function RootLayout({
   return (
     <html lang="ja" className={`${geist.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100">
-        <Navbar />
-        <main className="max-w-6xl mx-auto px-4 py-8 flex-1 w-full">{children}</main>
+        <ThemeProvider>
+          <Navbar />
+          <main className="max-w-6xl mx-auto px-4 py-8 flex-1 w-full">{children}</main>
+        </ThemeProvider>
       </body>
     </html>
   );

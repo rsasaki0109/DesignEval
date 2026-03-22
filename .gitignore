@@ -5,6 +5,7 @@ build/
 .env
 *.pyc
 output/
+.next/
 
 # Web
 web/node_modules/

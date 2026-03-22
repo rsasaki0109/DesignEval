@@ -25,14 +25,20 @@ from .output import to_json, to_markdown
 @click.option(
     "-m",
     "--model",
-    default="gpt-4o",
+    default=None,
+    help="LLM model to use for evaluation. Defaults to gpt-4o (openai) or claude-sonnet-4-20250514 (anthropic).",
+)
+@click.option(
+    "--provider",
+    type=click.Choice(["openai", "anthropic"], case_sensitive=False),
+    default="openai",
     show_default=True,
-    help="LLM model to use for evaluation.",
+    help="LLM provider to use.",
 )
 @click.option(
     "--api-key",
-    envvar="OPENAI_API_KEY",
-    help="OpenAI API key. Defaults to OPENAI_API_KEY env var.",
+    default=None,
+    help="API key. Defaults to OPENAI_API_KEY or ANTHROPIC_API_KEY env var based on provider.",
 )
 @click.option(
     "--stdout",
@@ -44,7 +50,8 @@ def main(
     problem_file: Path,
     answer_file: Path,
     output_dir: Path | None,
-    model: str,
+    model: str | None,
+    provider: str,
     api_key: str | None,
     to_stdout: bool,
 ) -> None:
@@ -53,19 +60,30 @@ def main(
     PROBLEM_FILE: Path to the design problem description (text/markdown).
     ANSWER_FILE: Path to the candidate's answer (text/markdown).
     """
+    import os
+
     if not api_key:
-        click.echo("Error: OPENAI_API_KEY is required (env var or --api-key)", err=True)
-        sys.exit(1)
+        if provider == "anthropic":
+            api_key = os.environ.get("ANTHROPIC_API_KEY")
+            env_var_name = "ANTHROPIC_API_KEY"
+        else:
+            api_key = os.environ.get("OPENAI_API_KEY")
+            env_var_name = "OPENAI_API_KEY"
+
+        if not api_key:
+            click.echo(f"Error: {env_var_name} is required (env var or --api-key)", err=True)
+            sys.exit(1)
 
     problem = problem_file.read_text(encoding="utf-8")
     answer = answer_file.read_text(encoding="utf-8")
 
     eval_input = EvaluationInput(problem=problem, answer=answer)
 
-    click.echo(f"Evaluating with model: {model} ...")
+    display_model = model or ("claude-sonnet-4-20250514" if provider == "anthropic" else "gpt-4o")
+    click.echo(f"Evaluating with {provider}/{display_model} ...")
 
     try:
-        result = evaluate(eval_input, model=model, api_key=api_key)
+        result = evaluate(eval_input, model=model, api_key=api_key, provider=provider)
     except Exception as e:
         click.echo(f"Error during evaluation: {e}", err=True)
         sys.exit(1)

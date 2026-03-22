@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Spinner from "@/components/Spinner";
+import { TEMPLATES } from "@/lib/templates";
 
 const PROGRESS_MESSAGES = [
   "LLMに送信中...",
@@ -13,6 +14,7 @@ const PROGRESS_MESSAGES = [
 
 export default function EvaluatePage() {
   const router = useRouter();
+  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
   const [problem, setProblem] = useState("");
   const [answer, setAnswer] = useState("");
   const [model, setModel] = useState("claude-sonnet-4-20250514");
@@ -69,6 +71,46 @@ export default function EvaluatePage() {
       <h1 className="text-2xl font-bold mb-6">新規評価</h1>
 
       <form onSubmit={handleSubmit} className="space-y-6">
+        <div>
+          <label className="block font-medium mb-2">問題テンプレート</label>
+          <div className="flex gap-2 overflow-x-auto pb-2">
+            <button
+              type="button"
+              disabled={loading}
+              onClick={() => {
+                setSelectedTemplate(null);
+                setProblem("");
+              }}
+              className={`flex-shrink-0 px-4 py-2 rounded-lg border text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                selectedTemplate === null
+                  ? "bg-blue-600 text-white border-blue-600"
+                  : "bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 hover:border-blue-400"
+              }`}
+            >
+              カスタム
+            </button>
+            {TEMPLATES.map((tpl) => (
+              <button
+                key={tpl.id}
+                type="button"
+                disabled={loading}
+                onClick={() => {
+                  setSelectedTemplate(tpl.id);
+                  setProblem(tpl.problem);
+                }}
+                className={`flex-shrink-0 px-4 py-2 rounded-lg border text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                  selectedTemplate === tpl.id
+                    ? "bg-blue-600 text-white border-blue-600"
+                    : "bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 hover:border-blue-400"
+                }`}
+              >
+                <span className="text-xs opacity-70 mr-1">{tpl.category}</span>
+                {tpl.title}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div>
           <label className="block font-medium mb-2">設計問題</label>
           <textarea

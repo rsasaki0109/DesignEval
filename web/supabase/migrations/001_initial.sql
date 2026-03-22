@@ -7,6 +7,7 @@ create table public.evaluations (
   model text not null,
   average_score numeric(3,1),
   decision text,
+  is_public boolean default false,
   created_at timestamptz default now()
 );
 
@@ -16,6 +17,10 @@ alter table public.evaluations enable row level security;
 create policy "Users can manage own evaluations"
   on public.evaluations for all
   using (auth.uid() = user_id);
+
+create policy "Anyone can view public evaluations"
+  on public.evaluations for select
+  using (is_public = true);
 
 -- Indexes
 create index idx_evaluations_user_created

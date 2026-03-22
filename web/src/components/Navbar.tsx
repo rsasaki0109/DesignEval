@@ -38,6 +38,12 @@ export default function Navbar() {
                 新規評価
               </Link>
               <Link
+                href="/compare"
+                className="text-sm hover:text-blue-600 dark:hover:text-blue-400"
+              >
+                比較
+              </Link>
+              <Link
                 href="/dashboard"
                 className="text-sm hover:text-blue-600 dark:hover:text-blue-400"
               >

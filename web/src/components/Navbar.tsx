@@ -44,6 +44,12 @@ export default function Navbar() {
                 比較
               </Link>
               <Link
+                href="/interview"
+                className="text-sm hover:text-blue-600 dark:hover:text-blue-400"
+              >
+                AI面接
+              </Link>
+              <Link
                 href="/dashboard"
                 className="text-sm hover:text-blue-600 dark:hover:text-blue-400"
               >
